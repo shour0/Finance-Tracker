@@ -1,9 +1,9 @@
 import React from 'react'
 
-const Hero = () => {
+const HeroDashboard = () => {
   return (
     <div>Hero</div>
   )
 }
 
-export default Hero
+export default HeroDashboard
