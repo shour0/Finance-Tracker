@@ -1,5 +1,5 @@
 "use client";
-import { cn } from "@/lib/utils";
+import { cn, emptyImageSrc } from "@/lib/utils";
 import { IconMenu2, IconX } from "@tabler/icons-react";
 import {
   motion,
@@ -195,7 +195,7 @@ export const NavbarLogo = () => {
     >
       <Image
       // TODO: PLACE SOURCE FOR LOGO
-        src=""
+        src={emptyImageSrc}
         alt="logo"
         width={30}
         height={30}

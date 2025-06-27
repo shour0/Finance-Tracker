@@ -9,6 +9,7 @@ import {onAuthStateChanged, User as FirebaseUser} from 'firebase/auth'
 import { useRouter } from "next/navigation";
 import { auth } from '@/app/firebase/config'
 import AuthModal from "@/components/AuthModal";
+import { emptyImageSrc } from "@/lib/utils";
 
 export default function Home() {
   const [user, setUser] = useState<FirebaseUser | null>(null)
@@ -105,7 +106,7 @@ export default function Home() {
           <div className="w-full overflow-hidden rounded-xl border border-gray-300 dark:border-gray-700">
             <Image
             // TODO: PLACE SOURCE FOR IMAGE
-              src=""
+              src={emptyImageSrc}
               alt="Landing page preview"
               className="aspect-[16/9] h-auto w-full object-cover max-w-7xl"
               height={1000}
