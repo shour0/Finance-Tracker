@@ -23,27 +23,18 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/NavigationMenu"
-import { useState, useEffect } from "react";
-import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
+import { useState } from "react";
+import { signOut } from "firebase/auth";
 import { auth } from '@/app/firebase/config'
 import { useRouter } from "next/navigation";
+import { useAuthWithModal } from "@/hooks/useAuth";
 import AuthModal from "./AuthModal";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [user, setUser] = useState<FirebaseUser | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { user, loading, isAuthOpen, setIsAuthOpen } = useAuthWithModal();
   const router = useRouter();
 
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
 
   const handleSignOut = async () => {
     try {

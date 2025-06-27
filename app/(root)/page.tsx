@@ -1,32 +1,20 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React from "react";
 import Navbar from "@/components/Navbar";
 import { ContainerTextFlip } from "@/components/ui/ContainerTextFlip";
 import { motion } from "motion/react";
 import Image from "next/image";
-import {onAuthStateChanged, User as FirebaseUser} from 'firebase/auth'
+
 import { useRouter } from "next/navigation";
-import { auth } from '@/app/firebase/config'
+
 import AuthModal from "@/components/AuthModal";
 import { emptyImageSrc } from "@/lib/utils";
+import { useAuthWithModal } from "@/hooks/useAuth";
 
 export default function Home() {
-  const [user, setUser] = useState<FirebaseUser | null>(null)
-  const [isAuthOpen, setisAuthOpen] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const { user, isAuthOpen, setIsAuthOpen} = useAuthWithModal()
   const router = useRouter()
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-      setLoading(true)
-    });
-
-    return () => unsubscribe();
-  }, []);
-
- 
 
   return (
     <div className="relative overflow-clip mx-auto flex flex-col items-center justify-center">
@@ -81,7 +69,7 @@ export default function Home() {
           }}
           className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-4"
         >
-          <button onClick={() => (user ? router.push("/dashboard") : setisAuthOpen(true))} className="w-60 transform rounded-lg bg-black px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
+          <button onClick={() => (user ? router.push("/dashboard") : setIsAuthOpen(true))} className="w-60 transform rounded-lg bg-black px-6 py-2 font-medium text-white transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200">
             Explore Now
           </button>
           <button className="w-60 transform rounded-lg border border-gray-300 bg-white px-6 py-2 font-medium text-black transition-all duration-300 hover:-translate-y-0.5 hover:bg-gray-100 dark:border-gray-700 dark:bg-black dark:text-white dark:hover:bg-gray-900">
@@ -115,7 +103,7 @@ export default function Home() {
           </div>
         </motion.div>
       </div>
-      <AuthModal open={isAuthOpen} onOpenChange={setisAuthOpen}/>
+      <AuthModal open={isAuthOpen} onOpenChange={setIsAuthOpen}/>
     </div>
   );
 }
