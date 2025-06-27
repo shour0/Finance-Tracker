@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
-import { CircleCheckIcon, CircleHelpIcon, CircleIcon } from "lucide-react"
+import { CircleCheckIcon, CircleHelpIcon, CircleIcon, LogOut, User } from "lucide-react"
 import {
   NavbarDemo,
   NavBody,
@@ -23,12 +23,52 @@ import {
   NavigationMenuTrigger,
   navigationMenuTriggerStyle,
 } from "@/components/ui/NavigationMenu"
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { onAuthStateChanged, signOut, User as FirebaseUser } from "firebase/auth";
+import { auth } from '@/app/firebase/config'
+import { useRouter } from "next/navigation";
+import AuthModal from "./AuthModal";
 
 const Navbar = () => {
-
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [user, setUser] = useState<FirebaseUser | null>(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+      setLoading(false);
+    });
+
+    return () => unsubscribe();
+  }, []);
+
+  const handleSignOut = async () => {
+    try {
+      await signOut(auth);
+      router.push('/');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="relative w-full pb-10">
+        <NavbarDemo>
+          <NavBody>
+            <NavbarLogo />
+            <div className="flex items-center gap-4">
+              <div className="h-9 w-16 bg-gray-200 animate-pulse rounded"></div>
+              <div className="h-9 w-24 bg-gray-200 animate-pulse rounded"></div>
+            </div>
+          </NavBody>
+        </NavbarDemo>
+      </div>
+    );
+  }
 
   return (
     <div className="relative w-full pb-10">
@@ -36,10 +76,31 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
-          <NavMenu />
+          {user ? <NavMenu /> : <AboutUsMenu />}
           <div className="flex items-center gap-4">
-            <NavbarButton variant="secondary">Login</NavbarButton>
-            <NavbarButton variant="primary">Book a call</NavbarButton>
+            {user ? (
+              <>
+                <div className="flex items-center gap-2 text-sm font-medium">
+                  <User className="h-4 w-4" />
+                  {user.displayName || user.email}
+                </div>
+                <NavbarButton 
+                  variant="secondary" 
+                  onClick={handleSignOut}
+                  className="flex items-center gap-2"
+                >
+                  <LogOut className="h-4 w-4" />
+                  Sign Out
+                </NavbarButton>
+              </>
+            ) : (
+              <>
+                <NavbarButton variant="secondary" onClick={() => {setIsAuthOpen(true)}}>
+                  Login
+                </NavbarButton>
+                <NavbarButton variant="primary">Book a call</NavbarButton>
+              </>
+            )}
           </div>
         </NavBody>
 
@@ -57,36 +118,55 @@ const Navbar = () => {
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
           >
-            <NavMenu />
+            {user ? <NavMenu /> : <AboutUsMenu />}
             <div className="flex w-full flex-col gap-4">
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Login
-              </NavbarButton>
-              <NavbarButton
-                onClick={() => setIsMobileMenuOpen(false)}
-                variant="primary"
-                className="w-full"
-              >
-                Book a call
-              </NavbarButton>
+              {user ? (
+                <>
+                  <div className="flex items-center gap-2 text-sm font-medium px-4 py-2 bg-gray-50 rounded">
+                    <User className="h-4 w-4" />
+                    {user.displayName || user.email}
+                  </div>
+                  <NavbarButton
+                    onClick={handleSignOut}
+                    variant="secondary"
+                    className="w-full flex items-center gap-2"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Sign Out
+                  </NavbarButton>
+                </>
+              ) : (
+                <>
+                  <NavbarButton
+                    onClick={() => setIsAuthOpen(true)}
+                    variant="secondary"
+                    className="w-full"
+                  >
+                    Login
+                  </NavbarButton>
+                  <NavbarButton
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    variant="primary"
+                    className="w-full"
+                  >
+                    Book a call
+                  </NavbarButton>
+                </>
+              )}
             </div>
           </MobileNavMenu>
         </MobileNav>
       </NavbarDemo>
 
-      {/* Navbar */}
+      <AuthModal open={isAuthOpen} onOpenChange={setIsAuthOpen}/>
     </div>
   );
 }
 
+// Navigation menu for authenticated users
 const NavMenu = () => {
   return (
     <NavigationMenu viewport={false}>
-      {/* NavMenu */}
       <NavigationMenuList>
         <NavigationMenuItem>
           <NavigationMenuTrigger>Track</NavigationMenuTrigger>
@@ -96,7 +176,7 @@ const NavMenu = () => {
                 <NavigationMenuLink asChild>
                   <Link
                     className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
-                    href="/"
+                    href="/dashboard/add-transaction"
                   >
                     <div className="mt-4 mb-2 text-lg font-medium">
                      Add Transaction
@@ -107,13 +187,13 @@ const NavMenu = () => {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/docs" title="View All">
-                	See a full list of your financial activity in reverse chronological order.
+              <ListItem href="/dashboard/transactions" title="View All">
+                See a full list of your financial activity in reverse chronological order.
               </ListItem>
-              <ListItem href="/docs/installation" title="Filter by Date">
-                	Narrow down transactions by specific days, weeks, or months.
+              <ListItem href="/dashboard/transactions/filter" title="Filter by Date">
+                Narrow down transactions by specific days, weeks, or months.
               </ListItem>
-              <ListItem href="/docs/primitives/typography" title="Categories">
+              <ListItem href="/dashboard/categories" title="Categories">
                 Browse by categorized spending like Food, Rent, or Travel.
               </ListItem>
             </ul>
@@ -136,12 +216,12 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Budgeting </NavigationMenuTrigger>
+          <NavigationMenuTrigger>Budgeting</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[300px] gap-4">
               <li>
                 <NavigationMenuLink asChild>
-                  <Link href="#">
+                  <Link href="/dashboard/budget/set">
                     <div className="font-medium">Set Budget</div>
                     <div className="text-muted-foreground">
                       Define spending limits
@@ -149,7 +229,7 @@ const NavMenu = () => {
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href="#">
+                  <Link href="/dashboard/budget/view">
                     <div className="font-medium">View Budgets</div>
                     <div className="text-muted-foreground">
                       See active budgets
@@ -157,7 +237,7 @@ const NavMenu = () => {
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href="#">
+                  <Link href="/dashboard/budget/alerts">
                     <div className="font-medium">Alerts</div>
                     <div className="text-muted-foreground">
                       Budget notifications
@@ -169,42 +249,42 @@ const NavMenu = () => {
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Accounts </NavigationMenuTrigger>
+          <NavigationMenuTrigger>Accounts</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[200px] gap-4">
               <li>
                 <NavigationMenuLink asChild>
-                  <Link href="#">Linked Accounts</Link>
+                  <Link href="/dashboard/accounts">Linked Accounts</Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href="#">Add Account</Link>
+                  <Link href="/dashboard/accounts/add">Add Account</Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href="#">Account Summary</Link>
+                  <Link href="/dashboard/accounts/summary">Account Summary</Link>
                 </NavigationMenuLink>
               </li>
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
         <NavigationMenuItem>
-          <NavigationMenuTrigger>Settings </NavigationMenuTrigger>
+          <NavigationMenuTrigger>Settings</NavigationMenuTrigger>
           <NavigationMenuContent>
             <ul className="grid w-[200px] gap-4">
               <li>
                 <NavigationMenuLink asChild>
-                  <Link href="#" className="flex-row items-center gap-2">
+                  <Link href="/dashboard/profile" className="flex-row items-center gap-2">
                     <CircleHelpIcon />
                     Profile
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href="#" className="flex-row items-center gap-2">
+                  <Link href="/dashboard/preferences" className="flex-row items-center gap-2">
                     <CircleIcon />
                     Preferences
                   </Link>
                 </NavigationMenuLink>
                 <NavigationMenuLink asChild>
-                  <Link href="#" className="flex-row items-center gap-2">
+                  <Link href="/dashboard/security" className="flex-row items-center gap-2">
                     <CircleCheckIcon />
                     Security
                   </Link>
@@ -215,7 +295,67 @@ const NavMenu = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/docs">Help</Link>
+            <Link href="/help">Help</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
+  )
+}
+
+const AboutUsMenu = () => {
+  return (
+    <NavigationMenu viewport={false}>
+      <NavigationMenuList>
+        <NavigationMenuItem>
+          <NavigationMenuTrigger>About Us</NavigationMenuTrigger>
+          <NavigationMenuContent>
+            <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
+              <li className="row-span-3">
+                <NavigationMenuLink asChild>
+                  <Link
+                    className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
+                    href="/about"
+                  >
+                    <div className="mt-4 mb-2 text-lg font-medium">
+                     Our Story
+                    </div>
+                    <p className="text-muted-foreground text-sm leading-tight">
+                      Learn about our mission to help you take control of your finances.
+                    </p>
+                  </Link>
+                </NavigationMenuLink>
+              </li>
+              <ListItem href="/features" title="Features">
+                Discover all the powerful tools we offer for financial management.
+              </ListItem>
+              <ListItem href="/pricing" title="Pricing">
+                Simple, transparent pricing for individuals and businesses.
+              </ListItem>
+              <ListItem href="/contact" title="Contact">
+                Get in touch with our team for support or questions.
+              </ListItem>
+            </ul>
+          </NavigationMenuContent>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/features">Features</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/pricing">Pricing</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/contact">Contact</Link>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+        <NavigationMenuItem>
+          <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
+            <Link href="/help">Help</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
       </NavigationMenuList>
@@ -226,36 +366,36 @@ const NavMenu = () => {
 const components: { title: string; href: string; description: string }[] = [
   {
     title: "Monthly Summary",
-    href: "/docs/primitives/alert-dialog",
+    href: "/dashboard/reports/monthly",
     description:
       "View a detailed financial breakdown of your income and expenses by month.",
   },
   {
     title: "Yearly Summary",
-    href: "/docs/primitives/hover-card",
+    href: "/dashboard/reports/yearly",
     description:
       "High-level overview of your financial year with trends and key insights.",
   },
   {
     title: "Income Report",
-    href: "/docs/primitives/progress",
+    href: "/dashboard/reports/income",
     description:
       "See all income sources and patterns over time.",
   },
   {
     title: "Expense Report",
-    href: "/docs/primitives/scroll-area",
+    href: "/dashboard/reports/expenses",
     description: "Track where your money goes across categories.",
   },
   {
     title: "Chart View",
-    href: "/docs/primitives/tabs",
+    href: "/dashboard/reports/charts",
     description:
       "Visualize income vs expenses, category pie charts, and trend lines.",
   },
   {
     title: "Export",
-    href: "/docs/primitives/tooltip",
+    href: "/dashboard/reports/export",
     description:
       "Download your report as a PDF or spreadsheet.",
   },
@@ -280,4 +420,5 @@ function ListItem({
     </li>
   )
 }
+
 export default Navbar;
