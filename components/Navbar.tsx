@@ -29,10 +29,12 @@ import { auth } from '@/app/firebase/config'
 import { useRouter } from "next/navigation";
 import { useAuthWithModal } from "@/hooks/useAuth";
 import AuthModal from "./AuthModal";
+import { useSimpleModal } from "@/hooks/useSimpleModal";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, loading, isAuthOpen, setIsAuthOpen } = useAuthWithModal();
+  const { showModal, Modal } = useSimpleModal()
   const router = useRouter();
 
 
@@ -61,6 +63,14 @@ const Navbar = () => {
     );
   }
 
+  const handleModalClick = () => {
+    showModal({
+      title: "Let’s Talk About Your Vision",
+      message: "Ready to take the next step? Whether you have questions or want to explore how we can help, our team is just a call away. Book a call and let’s bring your ideas to life. Our Phone number was successfully been copied to your clipboard.",
+      buttonText: "Ok",
+    })
+    
+  }
   return (
     <div className="relative w-full pb-10">
       <NavbarDemo>
@@ -89,7 +99,7 @@ const Navbar = () => {
                 <NavbarButton variant="secondary" onClick={() => {setIsAuthOpen(true)}}>
                   Login
                 </NavbarButton>
-                <NavbarButton variant="primary">Book a call</NavbarButton>
+                <NavbarButton variant="primary" onClick={() => {navigator.clipboard.writeText('+961 81 165 944'); handleModalClick()}}>Book a call </NavbarButton>
               </>
             )}
           </div>
@@ -113,7 +123,7 @@ const Navbar = () => {
             <div className="flex w-full flex-col gap-4">
               {user ? (
                 <>
-                  <div className="flex items-center gap-2 text-sm font-medium px-4 py-2 bg-gray-50 rounded">
+                  <div className="flex items-center gap-2 text-sm font-medium px-4 py-2  rounded">
                     <User className="h-4 w-4" />
                     {user.displayName || user.email}
                   </div>
@@ -148,8 +158,8 @@ const Navbar = () => {
           </MobileNavMenu>
         </MobileNav>
       </NavbarDemo>
-
       <AuthModal open={isAuthOpen} onOpenChange={setIsAuthOpen}/>
+      <Modal />
     </div>
   );
 }
@@ -411,5 +421,10 @@ function ListItem({
     </li>
   )
 }
+
+
+
+
+
 
 export default Navbar;
