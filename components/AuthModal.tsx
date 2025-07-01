@@ -19,6 +19,7 @@ const loginLoadingStates = [
   { text: "Validating credentials..." },
   { text: "Authenticating with Firebase..." },
   { text: "Verifying account status..." },
+  { text: "Generating auth token..." },
   { text: "Loading user profile..." },
   { text: "Welcome back!" },
 ]
@@ -27,6 +28,7 @@ const signupLoadingStates = [
   { text: "Validating form data..." },
   { text: "Creating Firebase account..." },
   { text: "Setting up user profile..." },
+  { text: "Generating auth token..." },
   { text: "Finalizing account setup..." },
   { text: "Account created successfully!" },
 ]
@@ -34,6 +36,7 @@ const signupLoadingStates = [
 const googleLoadingStates = [
   { text: "Opening Google authentication..." },
   { text: "Verifying with Google..." },
+  { text: "Generating auth token..." },
   { text: "Creating secure session..." },
   { text: "Welcome!" },
 ]
@@ -62,6 +65,18 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       return { strength: 'strong', color: 'bg-green-500', text: 'Strong' }
     }
     return { strength: 'medium', color: 'bg-yellow-500', text: 'Medium' }
+  }
+
+  const getFirebaseToken = async (user: any) => {
+    try {
+      const idToken = await user.getIdToken()
+      console.log('Firebase ID Token generated:', idToken)
+      
+      return idToken
+    } catch (error) {
+      console.error('Error getting Firebase token:', error)
+      throw error
+    }
   }
 
   const handlePasswordReset = async () => {
@@ -134,9 +149,13 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       })
 
       setCurrentLoadingStep(3)
+      const idToken = await getFirebaseToken(user)
+
       setCurrentLoadingStep(4)
+      setCurrentLoadingStep(5)
       
       console.log('User created successfully:', user)
+      console.log('Firebase ID Token ready for API calls')
 
       setEmail('')
       setPassword('')
@@ -194,9 +213,13 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       
       setCurrentLoadingStep(2)
       setCurrentLoadingStep(3)
+      const idToken = await getFirebaseToken(user)
+      
       setCurrentLoadingStep(4)
+      setCurrentLoadingStep(5)
       
       console.log('User logged in successfully:', user)
+      console.log('Firebase ID Token ready for API calls')
 
       setEmail('')
       setPassword('')
@@ -244,10 +267,15 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       setCurrentLoadingStep(0)
       setCurrentLoadingStep(1)
       const result = await signInWithPopup(auth, googleAuthProvider)
+      
       setCurrentLoadingStep(2)
+      const idToken = await getFirebaseToken(result.user)
+      
       setCurrentLoadingStep(3)
+      setCurrentLoadingStep(4)
       
       console.log('Signed in with Google', result.user)
+      console.log('Firebase ID Token ready for API calls')
       
       setTimeout(() => {
         onOpenChange(false)
