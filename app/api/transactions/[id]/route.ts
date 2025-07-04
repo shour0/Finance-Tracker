@@ -1,4 +1,3 @@
-// app/api/transactions/[id]/route.ts
 import { admin } from '@/lib/firebase.admin'
 import { Transaction } from '@/types/transaction';
 import { FieldValue, Timestamp } from 'firebase-admin/firestore';
@@ -37,6 +36,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       id: doc.id,
       amount: data.amount,
       category: data.category,
+      type: data.type,
       date: data.date,
       description: data.description || '',
       updatedAt: data.updatedAt,
@@ -44,12 +44,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
   
     return NextResponse.json(transaction)
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Transaction API Error:', error);
 
-    if (error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: error.message}, { status: 401})
-    } 
+    if (error instanceof Error) {
+      if (error.message.includes('Unauthorized')) {
+        return NextResponse.json({ error: error.message}, { status: 401})
+      } 
+    }
   }
   return NextResponse.json({error: 'Internal server Error'}, { status: 500 })
 }
@@ -100,11 +102,13 @@ export async function PUT(request: NextRequest, { params }: { params: Promise<{ 
     await transactionRef.update(updateTransaction);
 
     return NextResponse.json({success: true, id: transactionId})
-  } catch(error: any) {
+  } catch(error: unknown) {
     console.error('PUT transaction error:', error)
 
-    if (error.message.includes('Unauthorized')) {
-      return NextResponse.json({ error: error.message }, { status: 401 }) 
+    if (error instanceof Error) {
+      if (error.message.includes('Unauthorized')) {
+        return NextResponse.json({ error: error.message }, { status: 401 }) 
+      }
     }
   }
 
@@ -127,11 +131,13 @@ export async function DELETE(request: NextRequest, { params }: { params: Promise
     await transactionRef.delete()
 
     return NextResponse.json({success: true, id: transactionId})
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('DELETE transaction error', error)
 
-    if(error.message.includes('Unauthorized')) {
-      return NextResponse.json({error: error.message}, { status: 401})
+    if (error instanceof Error) {
+      if(error.message.includes('Unauthorized')) {
+        return NextResponse.json({error: error.message}, { status: 401})
+      }
     }
   }
   return NextResponse.json({error: 'Internal Server Error'}, { status: 500 }) 

@@ -1,5 +1,6 @@
 import React, { useState } from "react"
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword, signInWithPopup, updateProfile, sendPasswordResetEmail } from 'firebase/auth'
+// import type { User } from "firebase/auth"
 import { auth, googleAuthProvider } from '@/app/firebase/config'
 import { Button } from "@/components/ui/Button"
 import {
@@ -13,7 +14,7 @@ import { Input } from "@/components/ui/Input"
 import { Label } from "@/components/ui/Label"
 import { useRouter } from "next/navigation"
 import { MultiStepLoader } from "@/components/ui/MultiStepLoader"
-import { Eye, EyeOff, Mail, Lock, User, AlertCircle, CheckCircle2 } from 'lucide-react'
+import {User as UserIcon, Eye, EyeOff, Mail, Lock, AlertCircle, CheckCircle2 } from 'lucide-react'
 
 const loginLoadingStates = [
   { text: "Validating credentials..." },
@@ -67,17 +68,17 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
     return { strength: 'medium', color: 'bg-yellow-500', text: 'Medium' }
   }
 
-  const getFirebaseToken = async (user: any) => {
-    try {
-      const idToken = await user.getIdToken()
-      console.log('Firebase ID Token generated:', idToken)
+  // const getFirebaseToken = async (user: User) => {
+  //   try {
+  //     const idToken = await user.getIdToken()
+  //     console.log('Firebase ID Token generated:', idToken)
       
-      return idToken
-    } catch (error) {
-      console.error('Error getting Firebase token:', error)
-      throw error
-    }
-  }
+  //     return idToken
+  //   } catch (error) {
+  //     console.error('Error getting Firebase token:', error)
+  //     throw error
+  //   }
+  // }
 
   const handlePasswordReset = async () => {
     if (!email) {
@@ -100,7 +101,8 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
         setMode('login')
         setSuccess('')
       }, 3000)
-    } catch (error: any) {
+    } catch (error: unknown) {
+      if (error && typeof error === 'object' && 'code' in error)
       switch (error.code) {
         case 'auth/user-not-found':
           setError('No account found with this email')
@@ -149,7 +151,7 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       })
 
       setCurrentLoadingStep(3)
-      const idToken = await getFirebaseToken(user)
+      // const idToken = await getFirebaseToken(user)
 
       setCurrentLoadingStep(4)
       setCurrentLoadingStep(5)
@@ -166,11 +168,11 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
         router.push('/dashboard')
       }, 1000)
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Sign up error:', error)
       setIsLoading(false)
       setCurrentLoadingStep(0)
- 
+      if (error && typeof error === 'object' && 'code' in error)
       switch (error.code) {
         case 'auth/email-already-in-use':
           setError('Email is already registered')
@@ -213,7 +215,7 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       
       setCurrentLoadingStep(2)
       setCurrentLoadingStep(3)
-      const idToken = await getFirebaseToken(user)
+      // const idToken = await getFirebaseToken(user)
       
       setCurrentLoadingStep(4)
       setCurrentLoadingStep(5)
@@ -229,11 +231,12 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
         router.push('/dashboard')
       }, 1000)
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Login error:', error)
       setIsLoading(false)
       setCurrentLoadingStep(0)
-      
+
+      if (error && typeof error === 'object' && 'code' in error)
       switch (error.code) {
         case 'auth/user-not-found':
         case 'auth/wrong-password':
@@ -269,7 +272,7 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
       const result = await signInWithPopup(auth, googleAuthProvider)
       
       setCurrentLoadingStep(2)
-      const idToken = await getFirebaseToken(result.user)
+      // const idToken = await getFirebaseToken(result.user)
       
       setCurrentLoadingStep(3)
       setCurrentLoadingStep(4)
@@ -282,11 +285,11 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
         router.push('/dashboard')
       }, 1000)
       
-    } catch (error: any) {
+    } catch (error: unknown) {
       console.error('Google auth error:', error)
       setIsGoogleLoading(false)
       setCurrentLoadingStep(0)
-      
+      if (error && typeof error === 'object' && 'code' in error)
       switch (error.code) {
         case 'auth/popup-closed-by-user':
           setError('Sign-in cancelled')
@@ -395,7 +398,7 @@ const AuthModal = ({ open, onOpenChange }: { open: boolean; onOpenChange: (open:
                     Display Name
                   </Label>
                   <div className="relative">
-                    <User className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
+                    <UserIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" />
                     <Input 
                       id="displayName" 
                       type="text" 

@@ -1,4 +1,3 @@
-// app/api/transactions/route.ts
 import { Transaction } from "@/types/transaction";
 import { admin } from "@/lib/firebase.admin";
 import { NextRequest, NextResponse } from "next/server";
@@ -15,10 +14,9 @@ export async function GET(request: NextRequest) {
     const decodedToken = await admin.auth().verifyIdToken(token);
     const uid = decodedToken.uid;
     
-    // Get Firestore instance
     const db = admin.firestore();
     
-    // Get query parameters for filtering
+    // Get query parameters 
     const { searchParams } = new URL(request.url);
     const month = searchParams.get('month');
     const category = searchParams.get('category');
@@ -98,8 +96,7 @@ export async function POST(request: NextRequest) {
     ) {
       return NextResponse.json({ error: 'Invalid transaction data' }, { status: 400 });
     }
-    
-    // Get Firestore instance
+
     const db = admin.firestore();
     
     // Convert date to Firestore Timestamp

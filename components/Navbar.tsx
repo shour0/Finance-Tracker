@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react"
+import { Props } from "@/types/transaction";
 import Link from "next/link"
 import { CircleCheckIcon, CircleHelpIcon, CircleIcon, LogOut, User } from "lucide-react"
 import {
@@ -31,7 +32,7 @@ import { useAuthWithModal } from "@/hooks/useAuth";
 import AuthModal from "./AuthModal";
 import { useSimpleModal } from "@/hooks/useSimpleModal";
 
-const Navbar = () => {
+const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { user, loading, isAuthOpen, setIsAuthOpen } = useAuthWithModal();
   const { showModal, Modal } = useSimpleModal()
@@ -77,7 +78,7 @@ const Navbar = () => {
         {/* Desktop Navigation */}
         <NavBody>
           <NavbarLogo />
-          {user ? <NavMenu /> : <AboutUsMenu />}
+          {user ? <NavMenu showAddTransaction={showAddTransaction} setShowAddTransaction={setShowAddTransaction} /> : <AboutUsMenu />}
           <div className="flex items-center gap-4">
             {user ? (
               <>
@@ -119,7 +120,7 @@ const Navbar = () => {
             isOpen={isMobileMenuOpen}
             onClose={() => setIsMobileMenuOpen(false)}
           >
-            {user ? <NavMenu /> : <AboutUsMenu />}
+            {user ? <NavMenu showAddTransaction={showAddTransaction} setShowAddTransaction={setShowAddTransaction} /> : <AboutUsMenu />}
             <div className="flex w-full flex-col gap-4">
               {user ? (
                 <>
@@ -165,7 +166,7 @@ const Navbar = () => {
 }
 
 // Navigation menu for authenticated users
-const NavMenu = () => {
+const NavMenu: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) => {
   return (
     <NavigationMenu viewport={false}>
       <NavigationMenuList>
@@ -175,9 +176,8 @@ const NavMenu = () => {
             <ul className="grid gap-2 md:w-[400px] lg:w-[500px] lg:grid-cols-[.75fr_1fr]">
               <li className="row-span-3">
                 <NavigationMenuLink asChild>
-                  <Link
+                  <button onClick={() => setShowAddTransaction(!showAddTransaction)}
                     className="from-muted/50 to-muted flex h-full w-full flex-col justify-end rounded-md bg-linear-to-b p-6 no-underline outline-hidden select-none focus:shadow-md"
-                    href="/dashboard/add-transaction"
                   >
                     <div className="mt-4 mb-2 text-lg font-medium">
                      Add Transaction
@@ -185,7 +185,7 @@ const NavMenu = () => {
                     <p className="text-muted-foreground text-sm leading-tight">
                       Create a new income or expense entry with category, date, and amount.
                     </p>
-                  </Link>
+                  </button>
                 </NavigationMenuLink>
               </li>
               <ListItem href="/dashboard/transactions" title="View All">
