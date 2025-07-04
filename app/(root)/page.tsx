@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, {useState} from "react";
 import Navbar from "@/components/Navbar";
 import { ContainerTextFlip } from "@/components/ui/ContainerTextFlip";
 import { motion } from "motion/react";
@@ -12,12 +12,13 @@ import AuthModal from "@/components/AuthModal";
 import { emptyImageSrc } from "@/lib/utils";
 import { useAuthWithModal } from "@/hooks/useAuth";
 export default function Home() {
+    const [showAddTransaction, setShowAddTransaction] = useState(false);
   const { user, isAuthOpen, setIsAuthOpen} = useAuthWithModal()
   const router = useRouter()
 
   return (
     <div className="relative overflow-clip mx-auto flex flex-col items-center justify-center">
-      <Navbar />
+      <Navbar showAddTransaction={showAddTransaction} setShowAddTransaction={setShowAddTransaction}/>
       <div className="px-4 py-10 md:py-20">
         <h1 className="relative z-10 mx-auto max-w-4xl text-center text-2xl font-bold text-slate-700 md:text-4xl lg:text-7xl dark:text-slate-300">
           {`Take Control of ${''} Your Finances in`  
