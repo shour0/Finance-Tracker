@@ -29,7 +29,7 @@ const Page = () => {
   return (
 
    <main className="relative flex justify-center items-center py-3 px-5">
-    <div className="max-w-[140rem] w-full">
+    <div className=" w-full">
       <Navbar showAddTransaction={showAddTransaction} setShowAddTransaction={setShowAddTransaction}/>
       <HeroDashboard showAddTransaction={showAddTransaction} setShowAddTransaction={setShowAddTransaction} />
     </div>
