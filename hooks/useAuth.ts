@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import { useState, useEffect } from 'react';
 import { onAuthStateChanged, User as FirebaseUser } from 'firebase/auth';
@@ -37,12 +37,12 @@ export const useAuthWithModal = () => {
   const openAuthModal = () => setIsAuthOpen(true);
   const closeAuthModal = () => setIsAuthOpen(false);
 
-  return { 
-    user, 
-    loading, 
-    isAuthOpen, 
-    setIsAuthOpen, 
-    openAuthModal, 
-    closeAuthModal 
+  return {
+    user,
+    loading,
+    isAuthOpen,
+    setIsAuthOpen,
+    openAuthModal,
+    closeAuthModal,
   };
 };

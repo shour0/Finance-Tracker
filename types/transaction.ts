@@ -1,13 +1,13 @@
-import { Timestamp } from "firebase-admin/firestore";
+import { Timestamp } from 'firebase-admin/firestore';
 
-export type TransactionType = 'income' | 'expense'
+export type TransactionType = 'income' | 'expense';
 
 export interface Transaction {
   id?: string;
   amount: number;
   type: TransactionType;
   category: string;
-  date: Date; 
+  date: Date;
   updatedAt?: Timestamp;
   description?: string;
   createdAt?: Timestamp;
@@ -18,10 +18,16 @@ export type Props = {
   setShowAddTransaction: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-export type FirestoreTimestamp = {
-  _seconds: number;
-  _nanoseconds?: number;
-} | Date | string | number | null | undefined;
+export type FirestoreTimestamp =
+  | {
+      _seconds: number;
+      _nanoseconds?: number;
+    }
+  | Date
+  | string
+  | number
+  | null
+  | undefined;
 
 export interface ChartDataPoint {
   date: string;

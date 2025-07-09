@@ -1,6 +1,6 @@
-import { initializeApp, getApps, cert } from 'firebase-admin/app'
-import { getAuth } from 'firebase-admin/auth'
-import { getFirestore } from 'firebase-admin/firestore'
+import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { getAuth } from 'firebase-admin/auth';
+import { getFirestore } from 'firebase-admin/firestore';
 
 if (!getApps().length) {
   initializeApp({
@@ -10,10 +10,10 @@ if (!getApps().length) {
       privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
     }),
     projectId: process.env.FIREBASE_PROJECT_ID,
-  })
+  });
 }
 
 export const admin = {
   auth: () => getAuth(),
   firestore: () => getFirestore(),
-}
+};

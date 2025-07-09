@@ -3,17 +3,61 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/Input';
 import { Label } from './ui/Label';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/Select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/Select';
 import { Textarea } from '@/components/ui/Textarea';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell } from 'recharts';
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+  PieChart,
+  Pie,
+  Cell,
+} from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react';
-import { Props, Transaction, FirestoreTimestamp, TransactionType, FormData, ChartDataPoint } from '@/types/transaction';
+import {
+  Props,
+  Transaction,
+  FirestoreTimestamp,
+  TransactionType,
+  FormData,
+  ChartDataPoint,
+} from '@/types/transaction';
 import { getAuth } from 'firebase/auth';
 
-const categories = ['Food', 'Transport', 'Entertainment', 'Rent', 'Utilities', 'Healthcare', 'Shopping', 'Salary', 'Freelance', 'Investment'] as const;
-const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#00ff00', '#ff00ff', '#00ffff', '#ffff00'] as const;
+const categories = [
+  'Food',
+  'Transport',
+  'Entertainment',
+  'Rent',
+  'Utilities',
+  'Healthcare',
+  'Shopping',
+  'Salary',
+  'Freelance',
+  'Investment',
+] as const;
+const COLORS = [
+  '#8884d8',
+  '#82ca9d',
+  '#ffc658',
+  '#ff7300',
+  '#00ff00',
+  '#ff00ff',
+  '#00ffff',
+  '#ffff00',
+] as const;
 
-type Category = typeof categories[number];
+type Category = (typeof categories)[number];
 
 interface CategoryDataPoint {
   name: Category;
@@ -44,7 +88,7 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
     type: 'expense',
     category: '',
     date: new Date().toISOString().split('T')[0],
-    description: ''
+    description: '',
   });
 
   const fetchTransactions = async (): Promise<void> => {
@@ -64,10 +108,12 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
         throw new Error(`Failed to fetch transactions: ${res.status} ${res.statusText}`);
       }
       const data: Transaction[] = await res.json();
-      const parsed: Transaction[] = data.map((tx): Transaction => ({
-        ...tx,
-        date: parseFirestoreDate(tx.date),
-      }));
+      const parsed: Transaction[] = data.map(
+        (tx): Transaction => ({
+          ...tx,
+          date: parseFirestoreDate(tx.date),
+        })
+      );
       setTransactions(parsed);
     } catch (error) {
       const errorMessage = error instanceof Error ? error.message : 'Failed to fetch transactions';
@@ -78,7 +124,9 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
     }
   };
 
-  const addTransaction = async (transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>): Promise<void> => {
+  const addTransaction = async (
+    transactionData: Omit<Transaction, 'id' | 'createdAt' | 'updatedAt'>
+  ): Promise<void> => {
     setLoading(true);
     setError(null);
     try {
@@ -97,25 +145,28 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
         },
         body: JSON.stringify(transactionData),
       });
-      
+
       if (!response.ok) {
         throw new Error(`Failed to add transaction: ${response.status} ${response.statusText}`);
       }
-      
+
       const newTx: Transaction = {
         id: 'temp-' + Date.now(),
         ...transactionData,
-        amount: transactionData.type === 'expense' ? -Math.abs(transactionData.amount) : Math.abs(transactionData.amount),
+        amount:
+          transactionData.type === 'expense'
+            ? -Math.abs(transactionData.amount)
+            : Math.abs(transactionData.amount),
         date: new Date(transactionData.date),
       };
-      
-      setTransactions(prev => [newTx, ...prev]);
-      setFormData({ 
-        amount: '', 
-        type: 'expense', 
-        category: '', 
-        date: new Date().toISOString().split('T')[0], 
-        description: '' 
+
+      setTransactions((prev) => [newTx, ...prev]);
+      setFormData({
+        amount: '',
+        type: 'expense',
+        category: '',
+        date: new Date().toISOString().split('T')[0],
+        description: '',
       });
       setShowAddTransaction(false);
     } catch (error) {
@@ -130,21 +181,23 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
   const totalIncome = transactions
     .filter((t): t is Transaction => t.type === 'income')
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-  
+
   const totalExpenses = transactions
     .filter((t): t is Transaction => t.type === 'expense')
     .reduce((sum, t) => sum + Math.abs(t.amount), 0);
-  
+
   const balance = totalIncome - totalExpenses;
 
   const chartData: ChartDataPoint[] = transactions
     .slice(0, 7)
     .reverse()
-    .map((t): ChartDataPoint => ({
-      date: t.date.toLocaleDateString(),
-      amount: Math.abs(t.amount),
-      type: t.type
-    }));
+    .map(
+      (t): ChartDataPoint => ({
+        date: t.date.toLocaleDateString(),
+        amount: Math.abs(t.amount),
+        type: t.type,
+      })
+    );
 
   const categoryData: CategoryDataPoint[] = categories
     .map((cat): CategoryDataPoint => {
@@ -160,7 +213,7 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
       setError('Please fill in all required fields');
       return;
     }
-    
+
     const amount = parseFloat(formData.amount);
     if (isNaN(amount) || amount <= 0) {
       setError('Please enter a valid amount');
@@ -175,13 +228,13 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
   };
 
   const handleInputChange = (field: keyof FormData, value: string): void => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    if (error) setError(null); 
+    setFormData((prev) => ({ ...prev, [field]: value }));
+    if (error) setError(null);
   };
 
   const handleTypeChange = (value: string): void => {
     if (value === 'income' || value === 'expense') {
-      setFormData(prev => ({ ...prev, type: value as TransactionType }));
+      setFormData((prev) => ({ ...prev, type: value as TransactionType }));
     }
   };
 
@@ -191,9 +244,10 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
     }
   };
 
-  const filteredTransactions = selectedFilter === 'all'
-    ? transactions
-    : transactions.filter((t): t is Transaction => t.type === selectedFilter);
+  const filteredTransactions =
+    selectedFilter === 'all'
+      ? transactions
+      : transactions.filter((t): t is Transaction => t.type === selectedFilter);
 
   useEffect(() => {
     fetchTransactions();
@@ -215,7 +269,9 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
               <DollarSign className="h-4 w-4 text-green-400" />
             </CardHeader>
             <CardContent>
-              <div className={`text-2xl font-bold ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+              <div
+                className={`text-2xl font-bold ${balance >= 0 ? 'text-green-400' : 'text-red-400'}`}
+              >
                 ${balance.toLocaleString()}
               </div>
             </CardContent>
@@ -271,7 +327,7 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
                       required
                     />
                   </div>
-                  
+
                   <div>
                     <Label htmlFor="type">Type *</Label>
                     <Select value={formData.type} onValueChange={handleTypeChange}>
@@ -287,13 +343,18 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
 
                   <div>
                     <Label htmlFor="category">Category *</Label>
-                    <Select value={formData.category} onValueChange={(value) => handleInputChange('category', value)}>
+                    <Select
+                      value={formData.category}
+                      onValueChange={(value) => handleInputChange('category', value)}
+                    >
                       <SelectTrigger className="bg-[oklch(0.145 0 0)]">
                         <SelectValue placeholder="Select category" />
                       </SelectTrigger>
                       <SelectContent>
                         {categories.map((cat) => (
-                          <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                          <SelectItem key={cat} value={cat}>
+                            {cat}
+                          </SelectItem>
                         ))}
                       </SelectContent>
                     </Select>
@@ -327,8 +388,8 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
                   <Button onClick={handleSubmit} disabled={loading}>
                     {loading ? 'Adding...' : 'Add Transaction'}
                   </Button>
-                  <Button 
-                    variant="outline" 
+                  <Button
+                    variant="outline"
                     onClick={() => setShowAddTransaction(false)}
                     className="border-gray-600 text-gray-300 hover:bg-gray-700"
                   >
@@ -352,7 +413,7 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
                   <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
                   <XAxis dataKey="date" stroke="#9CA3AF" />
                   <YAxis stroke="#9CA3AF" />
-                  <Tooltip 
+                  <Tooltip
                     contentStyle={{ backgroundColor: '#1F2937', border: '1px solid #374151' }}
                     labelStyle={{ color: '#F3F4F6' }}
                   />
@@ -418,31 +479,40 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
           <CardContent>
             <div className="space-y-3">
               {loading && transactions.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  Loading transactions...
-                </div>
+                <div className="text-center py-8 text-gray-400">Loading transactions...</div>
               ) : filteredTransactions.length === 0 ? (
-                <div className="text-center py-8 text-gray-400">
-                  No transactions found
-                </div>
+                <div className="text-center py-8 text-gray-400">No transactions found</div>
               ) : (
                 filteredTransactions.slice(0, 10).map((transaction) => (
-                  <div 
-                    key={transaction.id} 
+                  <div
+                    key={transaction.id}
                     className="flex items-center justify-between p-3 bg-black rounded-lg hover:border-neutral-900 transition-colors duration-200"
                   >
                     <div className="flex items-center space-x-3">
-                      <div className={`w-3 h-3 rounded-full ${transaction.type === 'income' ? 'bg-green-400' : 'bg-red-400'}`} />
+                      <div
+                        className={`w-3 h-3 rounded-full ${
+                          transaction.type === 'income' ? 'bg-green-400' : 'bg-red-400'
+                        }`}
+                      />
                       <div>
                         <p className="font-medium">{transaction.category}</p>
-                        <p className="text-sm text-gray-400">{transaction.description || 'No description'}</p>
+                        <p className="text-sm text-gray-400">
+                          {transaction.description || 'No description'}
+                        </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className={`font-semibold ${transaction.type === 'income' ? 'text-green-400' : 'text-red-400'}`}>
-                        {transaction.type === 'income' ? '+' : '-'}${Math.abs(transaction.amount).toLocaleString()}
+                      <p
+                        className={`font-semibold ${
+                          transaction.type === 'income' ? 'text-green-400' : 'text-red-400'
+                        }`}
+                      >
+                        {transaction.type === 'income' ? '+' : '-'}$
+                        {Math.abs(transaction.amount).toLocaleString()}
                       </p>
-                      <p className="text-sm text-gray-400">{transaction.date.toLocaleDateString()}</p>
+                      <p className="text-sm text-gray-400">
+                        {transaction.date.toLocaleDateString()}
+                      </p>
                     </div>
                   </div>
                 ))
@@ -453,6 +523,6 @@ const HeroDashboard: React.FC<Props> = ({ showAddTransaction, setShowAddTransact
       </div>
     </div>
   );
-}
+};
 
 export default HeroDashboard;

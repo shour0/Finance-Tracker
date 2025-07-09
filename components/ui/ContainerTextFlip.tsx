@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import React, { useState, useEffect, useId } from "react";
-import { motion } from "motion/react";
-import { cn } from "@/lib/utils";
+import React, { useState, useEffect, useId } from 'react';
+import { motion } from 'motion/react';
+import { cn } from '@/lib/utils';
 
 export interface ContainerTextFlipProps {
   words?: string[];
@@ -14,7 +14,7 @@ export interface ContainerTextFlipProps {
 }
 
 export function ContainerTextFlip({
-  words = ["better", "modern", "beautiful", "awesome"],
+  words = ['better', 'modern', 'beautiful', 'awesome'],
   interval = 3000,
   className,
   textClassName,
@@ -51,31 +51,31 @@ export function ContainerTextFlip({
       animate={{ width }}
       transition={{ duration: animationDuration / 2000 }}
       className={cn(
-        "relative inline-block rounded-lg pt-2 pb-3 text-center text-4xl font-bold text-slate-800 md:text-7xl dark:text-slate-200",
-        className,
+        'relative inline-block rounded-lg pt-2 pb-3 text-center text-4xl font-bold text-slate-800 md:text-7xl dark:text-slate-200',
+        className
       )}
       key={words[currentWordIndex]}
     >
       <motion.div
         transition={{
           duration: animationDuration / 1000,
-          ease: "easeInOut",
+          ease: 'easeInOut',
         }}
-        className={cn("inline-block", textClassName)}
+        className={cn('inline-block', textClassName)}
         ref={textRef}
         layoutId={`word-div-${words[currentWordIndex]}-${id}`}
       >
         <motion.div className="inline-block">
-          {words[currentWordIndex].split("").map((letter, index) => (
+          {words[currentWordIndex].split('').map((letter, index) => (
             <motion.span
               key={index}
               initial={{
                 opacity: 0,
-                filter: "blur(10px)",
+                filter: 'blur(10px)',
               }}
               animate={{
                 opacity: 1,
-                filter: "blur(0px)",
+                filter: 'blur(0px)',
               }}
               transition={{
                 delay: index * 0.02,
