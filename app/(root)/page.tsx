@@ -4,7 +4,6 @@ import React, { useState } from 'react';
 import Navbar from '@/components/Navbar';
 import { ContainerTextFlip } from '@/components/ui/ContainerTextFlip';
 import { motion } from 'motion/react';
-import Image from 'next/image';
 
 import { useRouter } from 'next/navigation';
 import SVGMaskEffect from '@/components/SVGMaskEffect';

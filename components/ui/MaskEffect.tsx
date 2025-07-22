@@ -17,22 +17,24 @@ const MaskContainer = ({
   className?: string;
 }) => {
   const [isHovered, setIsHovered] = useState(false);
-  const [mousePosition, setMousePosition] = useState<any>({ x: null, y: null });
-  const containerRef = useRef<any>(null);
-  const updateMousePosition = (e: any) => {
+  const [mousePosition, setMousePosition] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
+  const containerRef = useRef<HTMLDivElement>(null);
+  const updateMousePosition = (e: MouseEvent) => {
+    if (!containerRef.current) return;
     const rect = containerRef.current.getBoundingClientRect();
     setMousePosition({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
 
   useEffect(() => {
-    containerRef.current.addEventListener('mousemove', updateMousePosition);
+    const container = containerRef.current;
+    if (!container) return;
+
+    container.addEventListener('mousemove', updateMousePosition);
     return () => {
-      if (containerRef.current) {
-        containerRef.current.removeEventListener('mousemove', updateMousePosition);
-      }
+      container.removeEventListener('mousemove', updateMousePosition);
     };
   }, []);
-  let maskSize = isHovered ? revealSize : size;
+  const maskSize = isHovered ? revealSize : size;
 
   return (
     <motion.div

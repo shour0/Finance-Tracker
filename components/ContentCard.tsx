@@ -13,7 +13,7 @@ const ContentCard = () => {
 const SkeletonOne = () => {
   return (
     <div>
-      <p className="font-bold md:text-4xl text-xl text-white">Monitor Bitcoin's current trend.</p>
+      <p className="font-bold md:text-4xl text-xl text-white">Monitor Bitcoin&apos;s current trend.</p>
       <p className="font-normal text-base text-white"></p>
       <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
         Bitcoin is at $92,03.20 with a slight 0.219% change. Set price alerts and review daily for
@@ -54,7 +54,7 @@ const SkeletonFour = () => {
   return (
     <div>
       <p className="font-bold md:text-4xl text-xl text-white">
-        Optimize your tracker’s performance.
+        Optimize your tracker&apos;s performance.
       </p>
       <p className="font-normal text-base text-white"></p>
       <p className="font-normal text-base my-4 max-w-lg text-neutral-200">
