@@ -1,10 +1,11 @@
 'use client';
-import { cn, emptyImageSrc } from '@/lib/utils';
+import { cn } from '@/lib/utils';
 import { IconMenu2, IconX } from '@tabler/icons-react';
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/react';
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
+import { LogOut } from 'lucide-react';
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -164,14 +165,7 @@ export const NavbarLogo = () => {
       href="#"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
-      <Image
-        // TODO: PLACE SOURCE FOR LOGO
-        src={emptyImageSrc}
-        alt="logo"
-        width={30}
-        height={30}
-      />
-      <span className="font-medium text-black dark:text-white">CapitalView</span>
+      <Image src="/bigLogo.png" alt="Capital View" width={220} height={2500} />
     </a>
   );
 };

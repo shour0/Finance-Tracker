@@ -49,7 +49,7 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
 
   if (loading) {
     return (
-      <div className="relative w-full pb-10">
+      <div className="relative w-full pb-10 z-10">
         <NavbarDemo>
           <NavBody>
             <NavbarLogo />
@@ -67,12 +67,12 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
     showModal({
       title: 'Let’s Talk About Your Vision',
       message:
-        'Ready to take the next step? Whether you have questions or want to explore how we can help, our team is just a call away. Book a call and let’s bring your ideas to life. Our Phone number was successfully been copied to your clipboard.',
-      buttonText: 'Ok',
+        'Imagine turning your financial dreams into reality! Ready to chat? Our team’s eager to help—book a call now and let’s kickstart your journey.\n  phone number copied to your clipboard!',
+      buttonText: 'Book Call',
     });
   };
   return (
-    <div className="relative w-full pb-10">
+    <div className="relative w-full pb-10 z-50">
       <NavbarDemo>
         {/* Desktop Navigation */}
         <NavBody>
@@ -170,7 +170,10 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
                     Login
                   </NavbarButton>
                   <NavbarButton
-                    onClick={() => setIsMobileMenuOpen(false)}
+                    onClick={() => {
+                      navigator.clipboard.writeText('+961 81 165 944');
+                      handleModalClick();
+                    }}
                     variant="primary"
                     className="w-full"
                   >
@@ -337,7 +340,7 @@ const AboutUsMenu = () => {
                   </Link>
                 </NavigationMenuLink>
               </li>
-              <ListItem href="/features" title="Features">
+              <ListItem href="#features" title="Features">
                 Discover all the powerful tools we offer for financial management.
               </ListItem>
               <ListItem href="/pricing" title="Pricing">
@@ -351,7 +354,7 @@ const AboutUsMenu = () => {
         </NavigationMenuItem>
         <NavigationMenuItem>
           <NavigationMenuLink asChild className={navigationMenuTriggerStyle()}>
-            <Link href="/features">Features</Link>
+            <Link href="#feature">Features</Link>
           </NavigationMenuLink>
         </NavigationMenuItem>
         <NavigationMenuItem>
