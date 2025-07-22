@@ -5,7 +5,6 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
-import { LogOut } from 'lucide-react';
 
 interface NavbarProps {
   children: React.ReactNode;
