@@ -164,7 +164,7 @@ export const NavbarLogo = () => {
       href="#"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
-      <Image src="/bigLogo.png" alt="Capital View" width={220} height={2500} />
+      <Image src="/whiteLogoLong.png" alt="Capital View" width={300} height={300} />
     </a>
   );
 };
