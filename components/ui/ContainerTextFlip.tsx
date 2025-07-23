@@ -27,7 +27,8 @@ export function ContainerTextFlip({
 
   const updateWidthForWord = () => {
     if (textRef.current) {
-      const textWidth = textRef.current.scrollWidth + 30;
+      const extraPadding = window.innerWidth < 640 ? 10 : 20;
+      const textWidth = textRef.current.scrollWidth + extraPadding;
       setWidth(textWidth);
     }
   };
@@ -51,7 +52,7 @@ export function ContainerTextFlip({
       animate={{ width }}
       transition={{ duration: animationDuration / 2000 }}
       className={cn(
-        'relative inline-block rounded-lg pt-2 pb-3 text-center font-bold text-slate-800 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl l dark:text-slate-200',
+        'relative inline-block rounded-lg px-1 py-1 sm:px-2 text-center font-bold text-slate-800 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl dark:text-slate-200',
         className
       )}
       key={words[currentWordIndex]}

@@ -76,7 +76,7 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
       <NavbarDemo>
         {/* Desktop Navigation */}
         <NavBody>
-          <NavbarLogo />
+          <NavbarLogo src="/whiteLogoLong.png" />
           {user ? (
             <NavMenu
               showAddTransaction={showAddTransaction}
@@ -128,7 +128,7 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
         {/* Mobile Navigation */}
         <MobileNav>
           <MobileNavHeader>
-            <NavbarLogo />
+            <NavbarLogo src="/whiteLogo.png" />
             <MobileNavToggle
               isOpen={isMobileMenuOpen}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
@@ -136,14 +136,16 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
           </MobileNavHeader>
 
           <MobileNavMenu isOpen={isMobileMenuOpen} onClose={() => setIsMobileMenuOpen(false)}>
-            {user ? (
-              <NavMenu
-                showAddTransaction={showAddTransaction}
-                setShowAddTransaction={setShowAddTransaction}
-              />
-            ) : (
-              <AboutUsMenu />
-            )}
+            <div className="w-full">
+              {user ? (
+                <MobileNavMenuContent
+                  showAddTransaction={showAddTransaction}
+                  setShowAddTransaction={setShowAddTransaction}
+                />
+              ) : (
+                <MobileAboutUsMenuContent />
+              )}
+            </div>
             <div className="flex w-full flex-col gap-4">
               {user ? (
                 <>
@@ -409,6 +411,195 @@ const components: { title: string; href: string; description: string }[] = [
     description: 'Download your report as a PDF or spreadsheet.',
   },
 ];
+
+const MobileNavMenuContent: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) => {
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
+  return (
+    <div className="w-full space-y-2">
+      <div className="w-full">
+        <button
+          onClick={() => toggleSection('track')}
+          className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-between"
+        >
+          Track
+          <span className={`transition-transform ${openSection === 'track' ? 'rotate-180' : ''}`}>▼</span>
+        </button>
+        {openSection === 'track' && (
+          <div className="pl-4 space-y-1 mt-2">
+            <button
+              onClick={() => setShowAddTransaction(!showAddTransaction)}
+              className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
+            >
+              Add Transaction
+            </button>
+            <Link href="/dashboard/transactions" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              View All
+            </Link>
+            <Link href="/dashboard/transactions/filter" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Filter by Date
+            </Link>
+            <Link href="/dashboard/categories" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Categories
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <div className="w-full">
+        <button
+          onClick={() => toggleSection('reports')}
+          className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-between"
+        >
+          Reports
+          <span className={`transition-transform ${openSection === 'reports' ? 'rotate-180' : ''}`}>▼</span>
+        </button>
+        {openSection === 'reports' && (
+          <div className="pl-4 space-y-1 mt-2">
+            {components.map((component) => (
+              <Link
+                key={component.title}
+                href={component.href}
+                className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md"
+              >
+                {component.title}
+              </Link>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Budgeting Section */}
+      <div className="w-full">
+        <button
+          onClick={() => toggleSection('budgeting')}
+          className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-between"
+        >
+          Budgeting
+          <span className={`transition-transform ${openSection === 'budgeting' ? 'rotate-180' : ''}`}>▼</span>
+        </button>
+        {openSection === 'budgeting' && (
+          <div className="pl-4 space-y-1 mt-2">
+            <Link href="/dashboard/budget/set" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Set Budget
+            </Link>
+            <Link href="/dashboard/budget/view" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              View Budgets
+            </Link>
+            <Link href="/dashboard/budget/alerts" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Alerts
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <div className="w-full">
+        <button
+          onClick={() => toggleSection('accounts')}
+          className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-between"
+        >
+          Accounts
+          <span className={`transition-transform ${openSection === 'accounts' ? 'rotate-180' : ''}`}>▼</span>
+        </button>
+        {openSection === 'accounts' && (
+          <div className="pl-4 space-y-1 mt-2">
+            <Link href="/dashboard/accounts" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Linked Accounts
+            </Link>
+            <Link href="/dashboard/accounts/add" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Add Account
+            </Link>
+            <Link href="/dashboard/accounts/summary" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Account Summary
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <div className="w-full">
+        <button
+          onClick={() => toggleSection('settings')}
+          className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-between"
+        >
+          Settings
+          <span className={`transition-transform ${openSection === 'settings' ? 'rotate-180' : ''}`}>▼</span>
+        </button>
+        {openSection === 'settings' && (
+          <div className="pl-4 space-y-1 mt-2">
+            <Link href="/dashboard/profile" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Profile
+            </Link>
+            <Link href="/dashboard/preferences" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Preferences
+            </Link>
+            <Link href="/dashboard/security" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Security
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <Link href="/help" className="block w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+        Help
+      </Link>
+    </div>
+  );
+};
+
+const MobileAboutUsMenuContent = () => {
+  const [openSection, setOpenSection] = useState<string | null>(null);
+
+  const toggleSection = (section: string) => {
+    setOpenSection(openSection === section ? null : section);
+  };
+
+  return (
+    <div className="w-full space-y-2">
+      <div className="w-full">
+        <button
+          onClick={() => toggleSection('about')}
+          className="w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md flex items-center justify-between"
+        >
+          About Us
+          <span className={`transition-transform ${openSection === 'about' ? 'rotate-180' : ''}`}>▼</span>
+        </button>
+        {openSection === 'about' && (
+          <div className="pl-4 space-y-1 mt-2">
+            <Link href="/about" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Our Story
+            </Link>
+            <Link href="#features" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Features
+            </Link>
+            <Link href="/pricing" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Pricing
+            </Link>
+            <Link href="/contact" className="block w-full text-left px-4 py-2 text-sm text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-md">
+              Contact
+            </Link>
+          </div>
+        )}
+      </div>
+
+      <Link href="#feature" className="block w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+        Features
+      </Link>
+      <Link href="/pricing" className="block w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+        Pricing
+      </Link>
+      <Link href="/contact" className="block w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+        Contact
+      </Link>
+      <Link href="/help" className="block w-full text-left px-4 py-2 text-sm font-medium hover:bg-gray-100 dark:hover:bg-gray-800 rounded-md">
+        Help
+      </Link>
+    </div>
+  );
+};
 
 function ListItem({
   title,

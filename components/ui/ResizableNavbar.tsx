@@ -5,6 +5,7 @@ import { motion, AnimatePresence, useScroll, useMotionValueEvent } from 'motion/
 
 import React, { useRef, useState } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 
 interface NavbarProps {
   children: React.ReactNode;
@@ -79,7 +80,7 @@ export const NavBody = ({ children, className, visible }: NavBodyProps) => {
         damping: 50,
       }}
       style={{
-        minWidth: '800px',
+        minWidth: '1000px',
       }}
       className={cn(
         'relative z-[60] mx-auto hidden w-full max-w-7xl flex-row items-center justify-between self-start rounded-full bg-transparent px-4 py-2 lg:flex dark:bg-transparent',
@@ -112,7 +113,7 @@ export const MobileNav = ({ children, className, visible }: MobileNavProps) => {
         damping: 50,
       }}
       className={cn(
-        'relative z-50 mx-auto flex w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-0 py-2 lg:hidden',
+        'relative z-50 mx-auto flex-wrap w-full max-w-[calc(100vw-2rem)] flex-col items-center justify-between bg-transparent px-0 py-2 lg:hidden',
         visible && 'bg-white/80 dark:bg-neutral-950/80',
         className
       )}
@@ -158,14 +159,35 @@ export const MobileNavToggle = ({ isOpen, onClick }: { isOpen: boolean; onClick:
   );
 };
 
-export const NavbarLogo = () => {
+export const NavbarLogo = ({ src = "/whiteLogoLong.png" }: { src?: string }) => {
+  const isCompactLogo = src === "/whiteLogo.png";
+  const width = isCompactLogo ? 40 : 200;
+  const height = isCompactLogo ? 40 : 40;
+
   return (
-    <a
+    <Link
       href="#"
       className="relative z-20 mr-4 flex items-center space-x-2 px-2 py-1 text-sm font-normal text-black"
     >
-      <Image src="/whiteLogoLong.png" alt="Capital View" width={300} height={300} />
-    </a>
+      <div
+        className="flex items-center justify-center"
+        style={{
+          width: `${width}px`,
+          height: `${height}px`,
+          minWidth: `${width}px`,
+          minHeight: `${height}px`
+        }}
+      >
+        <Image
+          src={src}
+          alt="Capital View"
+          width={width}
+          height={height}
+          className="object-contain"
+          priority
+        />
+      </div>
+    </Link>
   );
 };
 
@@ -184,7 +206,7 @@ export const NavbarButton = ({
   variant?: 'primary' | 'secondary' | 'dark' | 'gradient';
 } & (React.ComponentPropsWithoutRef<'a'> | React.ComponentPropsWithoutRef<'button'>)) => {
   const baseStyles =
-    'px-4 py-2 rounded-md bg-white button bg-white text-black text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center';
+    'px-4 py-2 rounded-md bg-white button bg-white text-black text-sm font-bold relative cursor-pointer hover:-translate-y-0.5 transition duration-200 inline-block text-center whitespace-nowrap';
 
   const variantStyles = {
     primary:

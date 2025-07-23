@@ -24,23 +24,28 @@ export default function Home() {
       />
       <main className="max-w-[92rem] px-4 py-10 md:py-20 lg:py-32">
         <div className="mb-20 lg:mb-32">
-          <h1 className="relative z-10 mx-auto text-center font-bold text-slate-700 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-tight lg:leading-[1.1] dark:text-slate-300">
-            {`Take Control of ${''} Your Finances in`.split(' ').map((word, index) => (
-              <motion.span
-                key={index}
-                initial={{ opacity: 0, filter: 'blur(4px)', y: 10 }}
-                animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                transition={{
-                  duration: 0.3,
-                  delay: index * 0.1,
-                  ease: 'easeInOut',
-                }}
-                className="mr-2 inline-block"
-              >
-                {word}
-              </motion.span>
-            ))}
-            <ContainerTextFlip words={['months', 'days', 'hours', 'minutes']} />
+          <h1 className="relative z-10 mx-auto text-center font-bold text-slate-700 text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl leading-tight lg:leading-[1.2] dark:text-slate-300">
+            <div className="flex flex-wrap justify-center items-center gap-x-2 gap-y-2 sm:gap-x-3 lg:gap-x-4 lg:gap-y-3">
+              {`Take Control of Your Finances in`.split(' ').map((word, index) => (
+                <motion.span
+                  key={index}
+                  initial={{ opacity: 0, filter: 'blur(4px)', y: 10 }}
+                  animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
+                  transition={{
+                    duration: 0.3,
+                    delay: index * 0.1,
+                    ease: 'easeInOut',
+                  }}
+                  className="inline-block"
+                >
+                  {word}
+                </motion.span>
+              ))}
+              <ContainerTextFlip
+                words={['months', 'days', 'hours', 'minutes']}
+                className="inline-block"
+              />
+            </div>
           </h1>
           <motion.p
             initial={{
