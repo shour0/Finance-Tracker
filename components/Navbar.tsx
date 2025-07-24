@@ -38,6 +38,15 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
   const { showModal, Modal } = useSimpleModal();
   const router = useRouter();
 
+  // display name for different screen sizes
+  const getDisplayName = (fullName: string, isSmallDesktop: boolean = false) => {
+    if (!fullName) return '';
+    if (isSmallDesktop && fullName.includes(' ')) {
+      return fullName.split(' ')[0];
+    }
+    return fullName;
+  };
+
   const handleSignOut = async () => {
     try {
       await signOut(auth);
@@ -85,12 +94,17 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
           ) : (
             <AboutUsMenu />
           )}
-          <div className="flex items-center gap-4">
+          <div className="flex items-center">
             {user ? (
               <>
                 <div className="flex items-center gap-2 text-sm font-medium">
                   <User className="h-4 w-4" />
-                  {user.displayName || user.email}
+                  <span className="hidden 2xl:block">
+                    {user.displayName || user.email}
+                  </span>
+                  <span className="2xl:hidden">
+                    {getDisplayName(user.displayName || user.email || '', true)}
+                  </span>
                 </div>
                 <NavbarButton
                   variant="secondary"
@@ -146,7 +160,7 @@ const Navbar: React.FC<Props> = ({ showAddTransaction, setShowAddTransaction }) 
                 <MobileAboutUsMenuContent />
               )}
             </div>
-            <div className="flex w-full flex-col gap-4">
+            <div className="flex w-full flex-col ">
               {user ? (
                 <>
                   <div className="flex items-center gap-2 text-sm font-medium px-4 py-2  rounded">
